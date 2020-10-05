@@ -27,7 +27,7 @@ let subtaskType = {
               <h4 style="margin-bottom: 3px; ">子任务 <%= ++i %></h4>
               <span style="font-weight: normal; "><%= subtaskType[subtask.type] %>，总分值 <%= subtask.score %></span>
               <% if (subtask.needNumber !== 0) { %>
-                <span style="font-weight: normal; ">依赖于Subtask<%= subtask.need %></span>
+                <span style="font-weight: normal; ">（依赖于Subtask<%= subtask.need %>）</span>
               <% } %>
             </th>
           </tr>
