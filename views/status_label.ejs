@@ -34,6 +34,9 @@ Vue.component('status-label', {
       }
     },
     colorClass() {
+      if(this.status == undefined){
+        return 'Skipped';
+      }
       var x = this.status.startsWith('Running') ? 'Running' : this.status;
       return (this.indetail ? 'status_detail ' : '') + x.toLowerCase().split(' ').join('_');
     },
