@@ -177,6 +177,7 @@ module.exports = {
 
         res[0].type = 'sum';
         res[0].score = 100;
+        res[0].needNumber = 0;
         res[0].cases.forEach((e) => { e.key = (e.input.match(/\d+/g) || []).map((x) => parseInt(x)).concat(e.input); });
         res[0].cases.sort((a, b) => {
           for (let i = 0; i < Math.max(a.key.length, b.key.length); ++i) {
@@ -209,7 +210,9 @@ module.exports = {
             if (answer) o.answer = getFileName(answer, c, false);
 
             return o;
-          })
+          }),
+          needNumber: st.needNumber,
+          need: st.need
         }));
 
         res = res.filter(x => x.cases && x.cases.length !== 0);

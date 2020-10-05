@@ -23,11 +23,14 @@ let subtaskType = {
       <% for (let subtask of testcases) { %>
         <% if (testcases.length !== 1) { %>
           <tr>
-            <td style="background-color: #F9FAFB" colspan="<%= problem.type === 'submit-answer' ? 3 : 2 %>"><h4 style="margin-bottom: 3px; ">子任务 <%= ++i %></h4><span style="font-weight: normal; "><%= subtaskType[subtask.type] %>，总分值 <%= subtask.score %></span></th>
+            <td style="background-color: #F9FAFB" colspan="<%= problem.type === 'submit-answer' ? 3 : 2 %>">
+              <h4 style="margin-bottom: 3px; ">子任务 <%= ++i %></h4>
+              <span style="font-weight: normal; "><%= subtaskType[subtask.type] %>，总分值 <%= subtask.score %></span>
+              <% if (subtask.needNumber !== 0) { %>
+                <span style="font-weight: normal; ">依赖于Subtask<%= subtask.need %></span>
+              <% } %>
+            </th>
           </tr>
-          <% if (subtask.needNumber !== 0) { %>
-            <span style="font-weight: normal; ">依赖于Subtask<%= subtask.need %></span>
-          <% } %>
         <% } else { %>
           <tr>
             <td style="background-color: #F9FAFB" colspan="<%= problem.type === 'submit-answer' ? 3 : 2 %>"><h4 style="margin-bottom: 3px; ">单个子任务</h4><span style="font-weight: normal; "><%= subtaskType[subtask.type] %></span></th>
