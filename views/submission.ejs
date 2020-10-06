@@ -243,13 +243,11 @@ const vueApp = new Vue({
       }
     },
     getSubtaskResult(t) {
-      console.log("checking subtask result...");
       if (t.cases.some(function(c){ return c.status === TaskStatus.Running;})) {
         return "Running";
       } else if (t.cases.some(function(c) { return c.status === TaskStatus.Waiting;})) {
         return "Waiting";
       } else if(t.cases.every(function(c) {return c.status === TaskStatus.Skipped;})) {
-        console.log("Subtask Skipped");
         return "Skipped";
       } else if (t.cases.every(function(c){ return c.status === TaskStatus.Done || c.status === TaskStatus.Skipped;})) {
         return this.getStatusString(this.firstNonAC(t.cases.filter(function(c) { return c.result; })
