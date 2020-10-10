@@ -33,7 +33,7 @@
     <span class="pl-l-Scalar-Plain">type</span><span class="pl-p-Indicator">:</span> <span class="pl-l-Scalar-Plain">mul</span>
     <span class="pl-l-Scalar-Plain">cases</span><span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">[</span><span class="pl-s">'4'</span><span class="pl-p-Indicator">,</span> <span class="pl-s">'5'</span><span class="pl-p-Indicator">,</span> <span class="pl-s">'6'</span><span class="pl-p-Indicator">]</span> <span class="pl-c1"># 测试点编号也可为字符串</span>
     <span class="pl-l-Scalar-Plain">needNumber</span><span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">1</span>          <span class="pl-c1"># （可选）依赖的subtask数量</span>
-    <span class="pl-l-Scalar-Plain">need</span><span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">[</span><span class="pl-s">1</span><span class="pl-p-Indicator">]</span>              <span class="pl-c1"># （可选）依赖的subtask编号（从1开始）</span>
+    <span class="pl-l-Scalar-Plain">need</span><span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">[</span><span class="pl-nv">1</span><span class="pl-p-Indicator">]</span>              <span class="pl-c1"># （可选）依赖的subtask编号（从1开始）</span>
 <span class="pl-l-Scalar-Plain">inputFile</span><span class="pl-p-Indicator">:</span> <span class="pl-s">'dat#.in'</span>   <span class="pl-c1"># 测试数据包中的输入文件</span>
 <span class="pl-l-Scalar-Plain">outputFile</span><span class="pl-p-Indicator">:</span> <span class="pl-s">'dat#.ans'</span> <span class="pl-c1"># 测试数据包中的输出文件</span>
 <span class="pl-c1"># 上述文件名中的 # 字符将被替换为测试点编号</span>
@@ -103,12 +103,12 @@
     <span class="pl-l-Scalar-Plain">penaltyError</span><span class="pl-p-Indicator">:</span> <span class="pl-l-Scalar-Plain">1200</span>
     <!-- 之后可能会考虑加submitLimit（表示提交次数限制，防止恶意卡服） -->
 <span class="pl-l-Scalar-Plain">penaltyType</span><span class="pl-p-Indicator">:</span> <span class="pl-s">'sum'</span>           <span class="pl-c1"># 罚时的计算方式，可选的值有 void、max 和 sum，在 noi/ioi 中默认为 max ，在 icpc 中默认为 sum.</span>
-<span class="pl-l-Scalar-Plain">penaltyZero</span><span class="pl-p-Indicator">:</span> <span class="pl-s">1</span>               <span class="pl-c1"># （可选，默认为1）零分提交（CE/FE 和评测故障除外）是否计入罚时</span>
+<span class="pl-l-Scalar-Plain">penaltyZero</span><span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">1</span>               <span class="pl-c1"># （可选，默认为1）零分提交（CE/FE 和评测故障除外）是否计入罚时</span>
   
 <span class="pl-l-Scalar-Plain">startTime</span><span class="pl-p-Indicator">:</span> <span class="pl-s">'2020/10/10-09:00:00'</span>   <span class="pl-c1"># 设置比赛的开始、结束时间（24 小时制）</span>
 <span class="pl-l-Scalar-Plain">endTime</span><span class="pl-p-Indicator">:</span> <span class="pl-s">'2020/10/10-21:00:00'</span>
   
-<span class="pl-l-Scalar-Plain">admins</span><span class="pl-p-Indicator">:</span> <span class="pl-s">['admin']</span>                  <span class="pl-c1"># 设置比赛管理员</span></code></pre></div>
+<span class="pl-l-Scalar-Plain">admins</span> <span class="pl-p-Indicator">:</span> <span class="pl-p-Indicator">[</span><span class="pl-s">'admin'</span><span class="pl-p-Indicator">]</span>                 <span class="pl-c1"># 设置比赛管理员</span></code></pre></div>
     </div>
 </div>
 <% include footer %>
