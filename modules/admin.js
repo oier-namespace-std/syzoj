@@ -488,3 +488,93 @@ app.get('/admin/serviceID', async (req, res) => {
     })
   }
 });
+
+app.get('/admin/change_pwd', async (req, res) => {
+    try {
+        if (!res.locals.user || !res.locals.user.is_admin) throw new ErrorMessage('您没有权限进行此操作。');
+
+        res.render('admin_change_pwd', {
+            admins: []
+        });
+    } catch (e) {
+        syzoj.log(e);
+        res.render('error', {
+            err: e
+        })
+    }
+});
+
+app.post('/admin/change_pwd', async (req, res) => {
+    try {
+        if (!res.locals.user || !res.locals.user.is_admin) throw new ErrorMessage('您没有权限进行此操作。');
+
+        let data = JSON.parse(req.body.data);
+        let users = data.user_id;
+
+        for(let user_id of users){
+            let user = await User.fromID(user_id);
+
+            if (!user) throw new ErrorMessage('无此用户。');
+
+            user.password = data.password;
+            await user.save();
+        }
+
+        res.redirect(syzoj.utils.makeUrl(['admin', 'change_pwd']));
+    } catch (e) {
+        syzoj.log(e);
+        res.render('error', {
+            err: e
+        })
+    }
+});
+
+app.get('/admin/audit/:type?', async (req, res) => {
+    try {
+        if (!res.locals.user || !res.locals.user.is_admin) throw new ErrorMessage('您没有权限进行此操作。');
+        let type = req.params.type || '0';
+        if(type == 'all')type = [0,1,2,3];
+		//Error$ 'Op.ne' is not defined
+        let users = await User.all({where: {status: type, is_admin: {[Op.ne]: 1}}});
+        users = users.map((user) =>{
+            return {
+                id: user.id,
+                username: user.username,
+                real_name: user.real_name,
+                email: user.email,
+                status: user.status,
+                register_time: user.register_time
+            }
+        });
+
+        res.render('admin_audit', {
+            type: typeof type == "object"? 'all' : type,
+            users: users
+        });
+    } catch (e) {
+        syzoj.log(e);
+        res.render('error', {
+            err: e
+        })
+    }
+});
+
+app.post('/admin/audit', async (req, res) => {
+    try {
+        if (!res.locals.user || !res.locals.user.is_admin) throw new ErrorMessage('您没有权限进行此操作。');
+
+        let data = JSON.parse(req.body.data);
+        let user = await User.fromID(data.user_id);
+        if(data.type != 0 && data.type != 1 && data.type != 2 && data.type != 3)throw new ErrorMessage('参数不正确。');
+
+        user.status = data.type;
+        await user.save();
+
+        res.redirect(syzoj.utils.makeUrl(['admin', 'audit', data._type]));
+    } catch (e) {
+        syzoj.log(e);
+        res.render('error', {
+            err: e
+        })
+    }
+});
