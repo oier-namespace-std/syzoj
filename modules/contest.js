@@ -221,6 +221,94 @@ app.get('/contest/:id', async (req, res) => {
   }
 });
 
+app.get('/contest/:id/ranklist/:type', async (req, res) => {
+    try {
+        let contest_id = parseInt(req.params.id);
+        let rank_type = parseInt(req.params.type);
+
+        const curUser = res.locals.user;
+        if(!curUser) throw new ErrorMessage('请登录后继续。', { '登录': syzoj.utils.makeUrl(['login'], { 'url': syzoj.utils.makeUrl(['contest', contest_id, "ranklist", rank_type]) }) });
+
+        if(!curUser.is_admin && await utils.getRunningContests(contest_id, curUser)) throw new ErrorMessage('正在考试中。');
+
+        let contest = await Contest.fromID(contest_id);
+        if (!contest) throw new ErrorMessage('无此比赛。');
+        if (!contest.is_public && (!res.locals.user || !res.locals.user.is_admin)) throw new ErrorMessage('比赛未公开，请耐心等待 (´∀ `)');
+        if (!contest.isVisitable(curUser))throw new ErrorMessage('比赛未公开，请耐心等待 (´∀ `)');
+
+        if(contest.pwd && !await syzoj.utils.checkContestToken(contest_id, curUser)){
+            res.redirect(syzoj.utils.makeUrl(['contest', contest_id, 'pwd_confirm'], { url: syzoj.utils.makeUrl(['contest', contest_id]) }));
+            return false;
+        }
+
+        const isSupervisior = await contest.isSupervisior(curUser);
+        contest.ended = contest.isEnded();
+        if ([contest.allowedSeeingResult(), contest.ended, isSupervisior].every(x => !x))
+            throw new ErrorMessage('您没有权限进行此操作。');
+
+        // if ([contest.allowedSeeingResult() && contest.allowedSeeingOthers(), contest.ended, isSupervisior].every(x => !x))
+        //     throw new ErrorMessage('您没有权限进行此操作。');
+
+        await contest.loadRelationships();
+
+        let players_id = [];
+        const {RANK_TYPE} = require("../libs/types");
+        
+        if(rank_type == RANK_TYPE.DURING)  //赛时排行榜
+            for (let i = 1; i <= contest.ranklist.c_ranklist.player_num; i++) players_id.push(contest.ranklist.c_ranklist[i]);
+        else if(rank_type == RANK_TYPE.AFTER)  //赛后排行榜
+            for (let i = 1; i <= contest.ranklist.ranklist.player_num; i++) players_id.push(contest.ranklist.ranklist[i]);
+        else throw new ErrorMessage('系统错误。');  //未匹配到任何类型
+
+        let ranklist = await players_id.mapAsync(async player_id => {
+            let player = await ContestPlayer.fromID(player_id);
+
+            if (contest.type === 'noi' || contest.type === 'ioi') {
+                player.score = 0;
+            }
+
+            if(rank_type === RANK_TYPE.DURING){
+                player.score_details = player.c_score_details;
+                player.score = 0;
+            }
+
+            for (let i in player.score_details) {
+                player.score_details[i].judge_state = await JudgeState.fromID(player.score_details[i].judge_id);
+
+                /*** XXX: Clumsy duplication, see ContestRanklist::updatePlayer() ***/
+                if (contest.type === 'noi' || contest.type === 'ioi') {
+                    let multiplier = contest.ranklist.ranking_params[i] || 1.0;
+
+                    player.score_details[i].weighted_score = player.score_details[i].score == null ? null : Math.round(player.score_details[i].score * multiplier);
+                    player.score += player.score_details[i].weighted_score;
+                }
+            }
+
+            let user = await User.fromID(player.user_id);
+
+            return {
+                user: user,
+                player: player
+            };
+        });
+
+        let problems_id = await contest.getProblems();
+        let problems = await problems_id.mapAsync(async id => await Problem.fromID(id));
+
+        res.render('contest_ranklist', {
+            contest: contest,
+            ranklist: ranklist,
+            problems: problems,
+            isSupervisior: isSupervisior
+        });
+    } catch (e) {
+        syzoj.log(e);
+        res.render('error', {
+            err: e
+        });
+    }
+});
+
 app.get('/contest/:id/ranklist', async (req, res) => {
   try {
     let contest_id = parseInt(req.params.id);
